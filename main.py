@@ -35,7 +35,7 @@ def handle_get_photo(msg: Message):
     point = (photo.width - logo.width - 17, photo.height - logo.height - 11)
     photo.paste(logo, point, mask=logo)
     photo.save(save_path)
-    bot.send_message(msg.chat.id, 'Готово, мой Господин')
+    bot.send_message(msg.chat.id, 'Готово!')
     bot.send_document(msg.chat.id, open(save_path, 'rb'))
 
 
