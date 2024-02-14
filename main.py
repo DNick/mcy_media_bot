@@ -1,9 +1,11 @@
 from datetime import datetime
+from io import BytesIO
+
 from telebot.types import Message
 from PIL import Image
 
 from config import bot
-file_types = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'heic']
+file_types = ['png', 'jpg', 'jpeg', 'bmp', 'svg']
 
 @bot.message_handler(commands=['start'])
 def handle_start(msg):
@@ -30,14 +32,25 @@ def handle_get_photo(msg: Message):
     photo = Image.open(save_path)
 
     logo = Image.open('logo.png')
-    ratio = 0.35
-    logo = logo.resize((int(logo.width * ratio), int(logo.height * ratio)))
-    point = (photo.width - logo.width - 17, photo.height - logo.height - 11)
-    photo.paste(logo, point, mask=logo)
-    photo.save(save_path)
-    bot.send_message(msg.chat.id, 'Готово!')
-    bot.send_document(msg.chat.id, open(save_path, 'rb'))
 
+    if photo.height > photo.width:
+        ratio = 1 / 18
+    else:
+        ratio = 1 / 16
+    # coordinates = (int(1357 / 1432 * photo.width), int(947 / 1080 * photo.height))
+    logo = logo.resize((int((photo.height * ratio) / logo.height * logo.width), int(photo.height * ratio)))
+    point = (photo.width - logo.width - photo.width // 90, photo.height - logo.height - photo.height // 90)
+    photo.paste(logo, point, mask=logo)
+
+    bot.send_message(msg.chat.id, 'Готово!')
+    photo.save(save_path)
+    # bio = BytesIO()
+    # bio.name = 'image.jpeg'
+    # photo.save(bio, 'JPEG')
+    # bio.seek(0)
+    # bot.send_photo(msg.chat.id, bio)
+    bot.send_document(msg.chat.id, open(save_path, 'rb'))
+    # bot.send_photo(msg.chat.id, photo)
 
 @bot.message_handler()
 def handle_strange(msg):
