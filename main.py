@@ -5,7 +5,7 @@ from telebot.types import Message
 from PIL import Image
 
 from config import bot
-file_types = ['png', 'jpg', 'jpeg', 'bmp', 'svg']
+file_types = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'heic']
 
 @bot.message_handler(commands=['start'])
 def handle_start(msg):
