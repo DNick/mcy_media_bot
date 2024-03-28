@@ -1,6 +1,6 @@
 from datetime import datetime
 from io import BytesIO
-
+from pillow_heif import register_heif_opener
 from telebot.types import Message
 from PIL import Image
 
@@ -59,4 +59,5 @@ def handle_strange(msg):
 
 if __name__ == '__main__':
     print(f"Start polling at {datetime.now()}")
+    register_heif_opener()
     bot.infinity_polling()
