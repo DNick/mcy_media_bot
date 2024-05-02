@@ -40,10 +40,10 @@ def handle_get_photo(msg: Message):
     # coordinates = (int(1357 / 1432 * photo.width), int(947 / 1080 * photo.height))
     logo = logo.resize((int((photo.height * ratio) / logo.height * logo.width), int(photo.height * ratio)))
     point = (photo.width - logo.width - photo.width // 90, photo.height - logo.height - photo.height // 90)
-    photo.paste(logo, point, mask=logo)
+    photo.paste(logo, point, mask=logo) # добавляет png фотку с прозрачным фоном
 
     bot.send_message(msg.chat.id, 'Готово!')
-    photo.save(save_path)
+    photo.save(save_path, quality=95)
     # bio = BytesIO()
     # bio.name = 'image.jpeg'
     # photo.save(bio, 'JPEG')
