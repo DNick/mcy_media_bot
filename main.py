@@ -42,16 +42,6 @@ def handle_get_photo(msg: Message):
     bio.name = save_path
     bio.seek(0)
 
-    # hr_image = tf.image.decode_image(tf.io.read_file(save_path))
-    # image = tf.expand_dims(hr_image, 0)
-    # image = tf.cast(image, tf.float32)
-    # model = hub.load("https://tfhub.dev/captain-pool/esrgan-tf2/1")
-    # super_resolution = model(image)
-    # image = np.asarray(super_resolution)
-    # image = tf.clip_by_value(image, 0, 255)
-    # image = Image.fromarray(tf.cast(image[0], tf.uint8).numpy())
-    # image.save(save_path)
-
     # photo = Image.open(save_path)
 
     photo = Image.open(bio)
@@ -83,48 +73,6 @@ def handle_get_photo(msg: Message):
     bot.send_document(msg.chat.id, open(save_path, 'rb'))
 
     # bot.send_photo(msg.chat.id, photo)
-# @bot.message_handler(content_types=['document', 'photo'])
-# def handle_get_photo(msg: Message):
-#     if msg.document:
-#         if msg.document.file_name.split('.')[-1].lower() not in file_types:
-#             bot.send_message(msg.chat.id, 'Вы отправили файл, не являющийся фоткой. Отправьте другой файл, пожалуйста')
-#             return
-#         file_id = msg.document.file_id
-#         # size = (msg.document.thumbnail.width, msg.document.thumbnail.height)
-#     else:
-#         file_id = msg.photo[-1].file_id
-#         # size = (msg.photo[-1].width, msg.photo[-1].height)
-#
-#     file_info = bot.get_file(file_id)
-#     extension = file_info.file_path.split('.')[-1].lower()
-#     downloaded_file = bot.download_file(file_info.file_path)
-#     if extension == 'heic': extension = 'jpg'
-#     save_path = 'picture.' + extension
-#     with open(save_path, 'wb') as new_file:
-#         new_file.write(downloaded_file)
-#
-#     photo = Image.open(save_path)
-#
-#     logo = Image.open('logo.png')
-#
-#     if photo.height > photo.width:
-#         ratio = 1 / 18
-#     else:
-#         ratio = 1 / 16
-#     # coordinates = (int(1357 / 1432 * photo.width), int(947 / 1080 * photo.height))
-#     logo = logo.resize((int((photo.height * ratio) / logo.height * logo.width), int(photo.height * ratio)))
-#     point = (photo.width - logo.width - photo.width // 90, photo.height - logo.height - photo.height // 90)
-#     photo.paste(logo, point, mask=logo) # добавляет png фотку с прозрачным фоном
-#
-#     bot.send_message(msg.chat.id, 'Готово!')
-#     photo.save(save_path, quality=95)
-#     # bio = BytesIO()
-#     # bio.name = 'image.jpeg'
-#     # photo.save(bio, 'JPEG')
-#     # bio.seek(0)
-#     # bot.send_photo(msg.chat.id, bio)
-#     bot.send_document(msg.chat.id, open(save_path, 'rb'))
-#     # bot.send_photo(msg.chat.id, photo)
 
 
 @bot.message_handler()
