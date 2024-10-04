@@ -1,12 +1,13 @@
 from datetime import datetime
 from io import BytesIO
-from pillow_heif import register_heif_opener
+# from pillow_heif import register_heif_opener
+from pillow_heif import HeifImagePlugin
 from telebot.types import Message
 from PIL import Image, ImageFilter, ImageEnhance
 # import tensorflow as tf
 # import tensorflow_hub as hub
 # import numpy as np
-import pillow_heif
+# import pillow_heif
 
 
 from config import bot
@@ -32,7 +33,7 @@ def handle_get_photo(msg: Message):
 
     file_info = bot.get_file(file_id)
     extension = file_info.file_path.split('.')[-1].lower()
-    # if extension == 'heic': extension = 'jpeg'
+    if extension == 'heic': extension = 'jpg'
     downloaded_file = bot.download_file(file_info.file_path)
     save_path = 'picture.' + extension
     # with open(save_path, 'wb') as new_file:
@@ -57,9 +58,7 @@ def handle_get_photo(msg: Message):
     point = (photo.width - logo.width - photo.width // 90, photo.height - logo.height - photo.height // 90)
     photo.paste(logo, point, mask=logo) # добавляет png фотку с прозрачным фоном
 
-    photo = photo.filter(ImageFilter.SHARPEN) # делаю более чётким
-    if extension != 'heic':
-        photo = ImageEnhance.Color(photo).enhance(1.18) # делаю более насыщенным
+    photo = ImageEnhance.Color(photo).enhance(1.17).filter(ImageFilter.SHARPEN) # делаю более чётким и насыщенным
     bot.send_message(msg.chat.id, 'Готово!')
 
     photo.save(save_path, quality=95)
@@ -82,5 +81,6 @@ def handle_strange(msg):
 
 if __name__ == '__main__':
     print(f"Start polling at {datetime.now()}")
-    register_heif_opener()
+    # register_heif_opener(thumbnails=True)
+    # pillow_heif.options.THUMBNAILS = True
     bot.infinity_polling()
