@@ -50,7 +50,7 @@ def handle_get_photo(msg: Message):
     logo = Image.open('logo.png')
 
     if photo.height > photo.width:
-        ratio = 1 / 18
+        ratio = 1 / 23
     else:
         ratio = 1 / 16
     # coordinates = (int(1357 / 1432 * photo.width), int(947 / 1080 * photo.height))
