@@ -135,10 +135,8 @@ def get_resized_logo_and_point(logo, height, width):
     else:
         ratio = 1 / 16
     new_logo = logo.resize((int((height * ratio) / logo.height * logo.width), int(height * ratio)))
-    point = (width - logo.width - width // 90, height - logo.height - height // 90)
+    point = (width - new_logo.width - width // 90, height - new_logo.height - height // 90)
     return new_logo, point
-
-
 
 
 
