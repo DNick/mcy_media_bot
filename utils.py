@@ -1,10 +1,7 @@
 from config import bot
-from datetime import datetime
 from io import BytesIO
-from pillow_heif import HeifImagePlugin
 from telebot.types import Message
 from PIL import Image, ImageFilter, ImageEnhance
-import moviepy.editor as mp
 import ffmpeg
 
 

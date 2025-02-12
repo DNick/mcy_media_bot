@@ -1,13 +1,3 @@
-from datetime import datetime
-from io import BytesIO
-# from pillow_heif import register_heif_opener
-from pillow_heif import HeifImagePlugin
-from telebot.types import Message
-from PIL import Image, ImageFilter, ImageEnhance
-# import tensorflow as tf
-# import tensorflow_hub as hub
-# import numpy as np
-# import pillow_heif
 from utils import *
 
 from config import bot
