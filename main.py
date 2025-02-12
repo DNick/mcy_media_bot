@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from pillow_heif import register_heif_opener
 from utils import *
 
 from config import bot
@@ -19,7 +19,7 @@ def handle_get_photo(msg: Message):
 
 @bot.message_handler(content_types=['video'])
 def handle_get_video(msg: Message):
-    file_id = msg.video[-1].file_id
+    file_id = msg.video.file_id
     process_video(msg.chat.id, file_id)
 
 
@@ -44,6 +44,6 @@ def handle_strange(msg):
 
 if __name__ == '__main__':
     print(f"Start polling at {datetime.now()}")
-    # register_heif_opener(thumbnails=True)
+    register_heif_opener(thumbnails=True)
     # pillow_heif.options.THUMBNAILS = True
     bot.infinity_polling()
