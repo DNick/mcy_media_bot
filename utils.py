@@ -131,7 +131,7 @@ def process_photo(chat_id, file_id):
 
 def get_resized_logo_and_point(logo, height, width):
     if height > width:
-        ratio = 1 / 23
+        ratio = 1 / 27
     else:
         ratio = 1 / 16
     new_logo = logo.resize((int((height * ratio) / logo.height * logo.width), int(height * ratio)))
