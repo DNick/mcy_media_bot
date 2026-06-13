@@ -1,0 +1,14 @@
+services:
+  bot:
+    build: .
+    image: mcy-media-bot:latest
+    container_name: mcy-media-bot
+    restart: unless-stopped
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN is required}
+      MAINTAINER_CHAT_ID: ${MAINTAINER_CHAT_ID:?MAINTAINER_CHAT_ID is required}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

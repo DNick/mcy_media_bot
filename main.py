@@ -1,49 +1,87 @@
-from datetime import datetime
+"""Telegram-бот, накладывающий логотип MCY на фото и видео."""
+
+from __future__ import annotations
+
+import logging
+from collections.abc import Callable
+
 from pillow_heif import register_heif_opener
-from utils import *
+from telebot.types import Message
 
 from config import bot
-file_types = ['png', 'jpg', 'jpeg', 'bmp', 'svg', 'heic', 'mp4', 'mov']
+from media import process_photo, process_video
 
-@bot.message_handler(commands=['start'])
-def handle_start(msg):
-    print(msg.chat.id)
-    bot.send_message(msg.chat.id, 'Приветствую Вас, о Великий Пользователь! Я призван служить команде MCY и её союзникам. Я буду делать всё что в моих силах, чтобы помочь Вам перевенуть мир онлайн-благовестия. Пока я умею только вставлять логотип на изображения, но надеюсь, что скоро мой бог сделает меня мощным орудием против холодного мира неведения и неверия.\nОтправьте мне изображение или файл с изображением, и я вставлю на неё логотип MCY тотчас.')
+logger = logging.getLogger(__name__)
 
+# Расширения, принимаемые при отправке изображения/видео файлом.
+SUPPORTED_FILE_TYPES = ("png", "jpg", "jpeg", "bmp", "svg", "heic", "mp4", "mov")
+VIDEO_FILE_TYPES = ("mp4", "mov")
 
-@bot.message_handler(content_types=['photo'])
-def handle_get_photo(msg: Message):
-    file_id = msg.photo[-1].file_id
-    process_photo(msg.chat.id, file_id)
-
-
-@bot.message_handler(content_types=['video'])
-def handle_get_video(msg: Message):
-    file_id = msg.video.file_id
-    process_video(msg.chat.id, file_id)
+START_MESSAGE = (
+    "Приветствую Вас, о Великий Пользователь! Я призван служить команде MCY и её "
+    "союзникам. Я буду делать всё что в моих силах, чтобы помочь Вам перевенуть мир "
+    "онлайн-благовестия. Пока я умею только вставлять логотип на изображения, но "
+    "надеюсь, что скоро мой бог сделает меня мощным орудием против холодного мира "
+    "неведения и неверия.\nОтправьте мне изображение или файл с изображением, и я "
+    "вставлю на неё логотип MCY тотчас."
+)
 
 
-@bot.message_handler(content_types=['document'])
-def handle_get_document(msg: Message):
-    if msg.document.file_name.split('.')[-1].lower() not in file_types:
-        bot.send_message(msg.chat.id, 'Вы отправили файл, не являющийся фоткой. Отправьте другой файл, пожалуйста')
+def _run(chat_id: int, processor: Callable[[int, str], None], file_id: str) -> None:
+    """Показывает индикацию обработки и сообщает пользователю, если что-то пошло не так."""
+    try:
+        bot.send_chat_action(chat_id, "upload_document")
+        processor(chat_id, file_id)
+    except Exception:
+        bot.send_message(chat_id, "Не удалось обработать файл. Попробуйте прислать другой.")
+        raise  # пробрасываем дальше — сработает MaintainerExceptionHandler
+
+
+@bot.message_handler(commands=["start"])
+def handle_start(msg: Message) -> None:
+    logger.info("Новый чат: %s", msg.chat.id)
+    bot.send_message(msg.chat.id, START_MESSAGE)
+
+
+@bot.message_handler(content_types=["photo"])
+def handle_photo(msg: Message) -> None:
+    _run(msg.chat.id, process_photo, msg.photo[-1].file_id)
+
+
+@bot.message_handler(content_types=["video"])
+def handle_video(msg: Message) -> None:
+    _run(msg.chat.id, process_video, msg.video.file_id)
+
+
+@bot.message_handler(content_types=["document"])
+def handle_document(msg: Message) -> None:
+    if msg.document.file_name.split(".")[-1].lower() not in SUPPORTED_FILE_TYPES:
+        bot.send_message(
+            msg.chat.id,
+            "Вы отправили файл, не являющийся фоткой. Отправьте другой файл, пожалуйста",
+        )
         return
-    file_id = msg.document.file_id
-    file_info = bot.get_file(file_id)
-    extension = file_info.file_path.split('.')[-1].lower()
-    if extension in ['mp4', 'mov']:
-        process_video(msg.chat.id, file_id)
-    else:
-        process_photo(msg.chat.id, file_id)
+
+    file_info = bot.get_file(msg.document.file_id)
+    extension = file_info.file_path.split(".")[-1].lower()
+    processor = process_video if extension in VIDEO_FILE_TYPES else process_photo
+    _run(msg.chat.id, processor, msg.document.file_id)
 
 
 @bot.message_handler()
-def handle_strange(msg):
-    bot.send_message(msg.chat.id, 'Извини, я тебя не понимаю. Отправь мне фотку (можно файлом)')
+def handle_unknown(msg: Message) -> None:
+    bot.send_message(msg.chat.id, "Извини, я тебя не понимаю. Отправь мне фотку (можно файлом)")
 
 
-if __name__ == '__main__':
-    print(f"Start polling at {datetime.now()}")
+def main() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+    logger.info("Запуск polling")
     register_heif_opener(thumbnails=True)
-    # pillow_heif.options.THUMBNAILS = True
     bot.infinity_polling()
+
+
+if __name__ == "__main__":
+    main()
