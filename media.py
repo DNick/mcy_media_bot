@@ -1,7 +1,5 @@
 """Обработка медиа: наложение логотипа MCY на фото и видео."""
 
-from __future__ import annotations
-
 import tempfile
 from io import BytesIO
 from pathlib import Path
@@ -9,7 +7,7 @@ from pathlib import Path
 import ffmpeg
 from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 
-from config import bot
+from config import BOT
 
 _BASE_DIR = Path(__file__).resolve().parent
 LOGO_PATH = _BASE_DIR / "logo.png"
@@ -40,12 +38,12 @@ def get_video_resolution(path: str) -> tuple[int, int]:
 
 
 def process_photo(chat_id: int, file_id: str) -> None:
-    file_info = bot.get_file(file_id)
+    file_info = BOT.get_file(file_id)
     extension = file_info.file_path.split(".")[-1].lower()
     if extension == "heic":
         extension = "jpg"
 
-    downloaded_file = bot.download_file(file_info.file_path)
+    downloaded_file = BOT.download_file(file_info.file_path)
 
     photo = Image.open(BytesIO(downloaded_file))
     photo = ImageOps.exif_transpose(photo)  # учитываем ориентацию из EXIF (фото с телефонов)
@@ -61,14 +59,14 @@ def process_photo(chat_id: int, file_id: str) -> None:
         save_path = Path(tmp) / f"picture.{extension}"
         photo.save(save_path, quality=95)
         with open(save_path, "rb") as result:
-            bot.send_document(chat_id, result)
+            BOT.send_document(chat_id, result)
 
-    bot.send_message(chat_id, "Готово!")
+    BOT.send_message(chat_id, "Готово!")
 
 
 def process_video(chat_id: int, file_id: str) -> None:
-    file_info = bot.get_file(file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
+    file_info = BOT.get_file(file_id)
+    downloaded_file = BOT.download_file(file_info.file_path)
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
@@ -103,6 +101,6 @@ def process_video(chat_id: int, file_id: str) -> None:
         output_stream.run(overwrite_output=True)
 
         with open(output, "rb") as result:
-            bot.send_document(chat_id, result)
+            BOT.send_document(chat_id, result)
 
-    bot.send_message(chat_id, "Готово!")
+    BOT.send_message(chat_id, "Готово!")

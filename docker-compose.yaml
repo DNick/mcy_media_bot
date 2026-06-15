@@ -4,9 +4,12 @@ services:
     image: mcy-media-bot:latest
     container_name: mcy-media-bot
     restart: unless-stopped
+    # network_mode: host — чтобы контейнер видел прокси на хосте (см. README)
+    network_mode: host
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN is required}
       MAINTAINER_CHAT_ID: ${MAINTAINER_CHAT_ID:?MAINTAINER_CHAT_ID is required}
+      TELEGRAM_PROXY: ${TELEGRAM_PROXY:-socks5h://127.0.0.1:10808}
     logging:
       driver: json-file
       options:

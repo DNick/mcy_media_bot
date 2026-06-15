@@ -1,11 +1,9 @@
 """Конфигурация бота и общий экземпляр TeleBot."""
 
-from __future__ import annotations
-
 import logging
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from telebot import ExceptionHandler, TeleBot
+from telebot import ExceptionHandler, TeleBot, apihelper
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +19,13 @@ class Settings(BaseSettings):
 
     bot_token: str
     maintainer_chat_id: int
+    telegram_proxy: str | None = None
 
 
-settings = Settings()
+SETTINGS = Settings()
+
+if SETTINGS.telegram_proxy:
+    apihelper.proxy = {"https": SETTINGS.telegram_proxy}
 
 
 class MaintainerExceptionHandler(ExceptionHandler):
@@ -31,8 +33,8 @@ class MaintainerExceptionHandler(ExceptionHandler):
 
     def handle(self, exception: Exception) -> bool:
         logger.exception("Необработанная ошибка в боте")
-        bot.send_message(settings.maintainer_chat_id, f"Ошибка в боте:\n\n{exception}")
+        BOT.send_message(SETTINGS.maintainer_chat_id, f"Ошибка в боте:\n\n{exception}")
         return True
 
 
-bot = TeleBot(settings.bot_token, exception_handler=MaintainerExceptionHandler())
+BOT = TeleBot(SETTINGS.bot_token, exception_handler=MaintainerExceptionHandler())
