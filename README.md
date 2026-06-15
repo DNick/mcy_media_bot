@@ -52,8 +52,9 @@ docker compose up -d --build
 
 1. **Stacks → Add stack**, способ *Repository* (укажите этот git-репозиторий)
    или *Web editor* (вставьте содержимое `docker-compose.yaml`).
-2. В разделе **Environment variables** задайте `BOT_TOKEN` и `MAINTAINER_CHAT_ID`
-   (файл `.env` в репозиторий не коммитится).
+2. В разделе **Environment variables** задайте `BOT_TOKEN`, `MAINTAINER_CHAT_ID`
+   и — если нужен прокси — `TELEGRAM_PROXY` (см. ниже). Файл `.env` в репозиторий
+   не коммитится.
 3. **Deploy the stack**. Контейнер перезапускается автоматически
    (`restart: unless-stopped`).
 
@@ -62,8 +63,9 @@ docker compose up -d --build
 Если провайдер блокирует `api.telegram.org`, бот может ходить к Telegram через
 SOCKS5/HTTP-прокси. Задайте `TELEGRAM_PROXY` (например, `socks5h://127.0.0.1:10808`);
 схема `socks5h` резолвит DNS на стороне прокси. Без переменной бот работает напрямую
-(локальный режим). Прокси применяется только к вызовам Telegram API и загрузке
-файлов — обработка медиа сети не требует.
+(в `docker-compose.yaml` `TELEGRAM_PROXY` по умолчанию пуст — на сервере задайте его
+в Portainer). Прокси применяется только к вызовам Telegram API и загрузке файлов —
+обработка медиа сети не требует.
 
 **Важно про Docker.** Прокси работает на самой машине, где запущен контейнер, а не
 внутри него. Адрес `127.0.0.1` изнутри контейнера указывает на сам контейнер, а не

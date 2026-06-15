@@ -9,7 +9,7 @@ services:
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN is required}
       MAINTAINER_CHAT_ID: ${MAINTAINER_CHAT_ID:?MAINTAINER_CHAT_ID is required}
-      TELEGRAM_PROXY: ${TELEGRAM_PROXY:-socks5h://127.0.0.1:10808}
+      TELEGRAM_PROXY: ${TELEGRAM_PROXY:-}
     logging:
       driver: json-file
       options:
