@@ -1,0 +1,25 @@
+# VCS / IDE
+.git
+.gitignore
+.idea
+.vscode
+
+# Секреты и окружения
+.env
+.env.example
+.venv
+venv
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Docker (не нужны внутри образа)
+Dockerfile
+.dockerignore
+docker-compose.yaml
+
+.DS_Store
