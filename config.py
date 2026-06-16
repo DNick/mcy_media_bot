@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     bot_token: str
-    maintainer_chat_id: int
+    alert_group_id: int
     telegram_proxy: str | None = None
 
 
@@ -28,13 +28,13 @@ if SETTINGS.telegram_proxy:
     apihelper.proxy = {"https": SETTINGS.telegram_proxy}
 
 
-class MaintainerExceptionHandler(ExceptionHandler):
-    """Логирует необработанные ошибки и пересылает их мейнтейнеру в чат."""
+class AlertExceptionHandler(ExceptionHandler):
+    """Логирует необработанные ошибки и шлёт их в группу разработчиков."""
 
     def handle(self, exception: Exception) -> bool:
         logger.exception("Необработанная ошибка в боте")
-        BOT.send_message(SETTINGS.maintainer_chat_id, f"Ошибка в боте:\n\n{exception}")
+        BOT.send_message(SETTINGS.alert_group_id, f"Ошибка в боте:\n\n{exception}")
         return True
 
 
-BOT = TeleBot(SETTINGS.bot_token, exception_handler=MaintainerExceptionHandler())
+BOT = TeleBot(SETTINGS.bot_token, exception_handler=AlertExceptionHandler())
