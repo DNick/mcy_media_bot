@@ -1,5 +1,6 @@
 """Конфигурация бота и общий экземпляр TeleBot."""
 
+import html
 import logging
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -33,7 +34,12 @@ class AlertExceptionHandler(ExceptionHandler):
 
     def handle(self, exception: Exception) -> bool:
         logger.exception("Необработанная ошибка в боте")
-        BOT.send_message(SETTINGS.alert_group_id, f"Ошибка в боте:\n\n{exception}")
+        body = html.escape(str(exception))
+        BOT.send_message(
+            SETTINGS.alert_group_id,
+            f'Ошибка в боте:\n<pre><code class="language-error">{body}</code></pre>',
+            parse_mode="HTML",
+        )
         return True
 
 
