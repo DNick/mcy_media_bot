@@ -32,7 +32,7 @@ def _run(chat_id: int, processor: Callable[[int, str], None], file_id: str) -> N
         processor(chat_id, file_id)
     except Exception:
         BOT.send_message(chat_id, "Не удалось обработать файл. Попробуйте прислать другой.")
-        raise  # пробрасываем дальше — сработает MaintainerExceptionHandler
+        raise  # пробрасываем дальше — сработает AlertExceptionHandler
 
 
 @BOT.message_handler(commands=["start"])
