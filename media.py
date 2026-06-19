@@ -61,8 +61,6 @@ def process_photo(chat_id: int, file_id: str) -> None:
         with open(save_path, "rb") as result:
             BOT.send_document(chat_id, result)
 
-    BOT.send_message(chat_id, "Готово!")
-
 
 def process_video(chat_id: int, file_id: str) -> None:
     file_info = BOT.get_file(file_id)
@@ -102,5 +100,3 @@ def process_video(chat_id: int, file_id: str) -> None:
 
         with open(output, "rb") as result:
             BOT.send_document(chat_id, result)
-
-    BOT.send_message(chat_id, "Готово!")
